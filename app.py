@@ -12,6 +12,7 @@ from zeep.transports import Transport
 import requests
 from requests.auth import HTTPBasicAuth
 from dotenv import load_dotenv
+from datetime import datetime
 
 # Загружаем переменные окружения
 load_dotenv()
@@ -230,6 +231,37 @@ def upload_file():
                 flash(f'Ошибка при обработке: {str(e)}')
             return redirect(url_for('upload_file'))
     return render_template("index.html")
+
+
+@app.route('/health')
+def health_check():
+    """Health check endpoint for monitoring"""
+    return {
+        'status': 'healthy',
+        'application': 'GetChips API',
+        'timestamp': datetime.now().isoformat(),
+        'version': '1.0'
+    }, 200
+
+
+@app.route('/version')
+def version_info():
+    """Version information endpoint"""
+    try:
+        import subprocess
+        result = subprocess.run(
+            ['git', 'rev-parse', '--short', 'HEAD'],
+            capture_output=True, text=True, cwd=os.path.dirname(os.path.abspath(__file__))
+        )
+        commit_hash = result.stdout.strip() if result.returncode == 0 else "unknown"
+
+        return {
+            'application': 'GetChips API',
+            'commit': commit_hash,
+            'deployed_at': datetime.now().isoformat()
+        }
+    except Exception as e:
+        return {'error': str(e)}, 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
