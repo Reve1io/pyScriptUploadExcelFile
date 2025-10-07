@@ -31,8 +31,36 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
+            set -e
+            echo "🚀 Starting deployment..."
+            
             cd /home/pyScriptUploadExcelFile
+            
+            # Обновляем код
             git pull origin master
+            
+            # Обновляем зависимости
             source venv/bin/activate
             pip install -r requirements.txt
+            
+            # ПРИНУДИТЕЛЬНО освобождаем порт 5001
+            echo "🔫 Killing processes on port 5001..."
+            sudo kill -9 $(sudo lsof -t -i:5001) 2>/dev/null || true
+            sleep 2
+            
+            # Перезапускаем сервис
+            echo "🔄 Restarting flaskapp service..."
+            sudo systemctl daemon-reload
             sudo systemctl restart flaskapp
+            
+            # Даем больше времени на запуск
+            sleep 10
+            
+            # Проверяем статус
+            if sudo systemctl is-active --quiet flaskapp; then
+              echo "✅ Service restarted successfully"
+            else
+              echo "❌ Service failed to start"
+              sudo systemctl status flaskapp
+              exit 1
+            fi
