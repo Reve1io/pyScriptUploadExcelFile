@@ -246,7 +246,7 @@ def health_check():
 
 @app.route('/version')
 def version_info():
-    """Version information endpoint"""
+    """Version information new endpoint"""
     try:
         import subprocess
         result = subprocess.run(
