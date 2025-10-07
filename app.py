@@ -235,7 +235,7 @@ def upload_file():
 
 @app.route('/health')
 def health_check():
-    """Health check endpoint for monitoring"""
+    """Health check endpoint for monitorin"""
     return {
         'status': 'healthy',
         'application': 'GetChips API',
