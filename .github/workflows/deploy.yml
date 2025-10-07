@@ -38,6 +38,12 @@ jobs:
             
             git pull origin master
             
+            if ! dpkg -l | grep -q python3-venv; then
+              echo "📦 Installing python3-venv..."
+              sudo apt update
+              sudo apt install python3-venv python3-pip -y
+            fi
+            
             if [ ! -d "venv" ]; then
               echo "🐍 Creating virtual environment..."
               python3 -m venv venv
