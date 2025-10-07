@@ -27,15 +27,9 @@ jobs:
       - name: Deploy to remote server
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: 109.107.171.155
-          username: root
-          key: "-----BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACAjGW+s/3tFd1ffSZjUvVzZsq+9EZISCRds7xNU2ZVM1AAAAJCJD0UkiQ9F
-JAAAAAtzc2gtZWQyNTUxOQAAACAjGW+s/3tFd1ffSZjUvVzZsq+9EZISCRds7xNU2ZVM1A
-AAAEAZj0gF+GsqKssCYaWBolPx/MYPgW/69s/TbrTJg5PBKCMZb6z/e0V3V99JmNS9XNmy
-r70RkhIJF2zvE1TZlUzUAAAADGdpdGh1Yl9jaV9jZAE=
------END OPENSSH PRIVATE KEY-----"
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
           script: |
             cd /home/pyScriptUploadExcelFile
             git pull origin master
