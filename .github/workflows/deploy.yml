@@ -29,7 +29,7 @@ jobs:
         with:
           host: 109.107.171.155
           username: root
-          key: SHA256:vRnFNqtyE9J+LrYUiN8wd/v0zQC29N0A1CjPHuGem7A
+          key: AAAAC3NzaC1lZDI1NTE5AAAAIBwcJ0gdS/2ZLzYj8xnzT3jGGVKRO9HP0byWR1CdWiyV
           script: |
             cd /home/pyScriptUploadExcelFile
             git pull origin master
