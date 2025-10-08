@@ -40,7 +40,7 @@ def upload_to_ssh(file_path):
     ssh_password = os.getenv('SSH_PASSWORD')
     remote_path = f'/home/GetChips_API/project2.0/uploads/{os.path.basename(file_path)}'
 
-    scp_command = f"sshpass -p {ssh_password} scp -P {ssh_port} {file_path} {ssh_user}@{ssh_host}:{remote_path}"
+    scp_command = f"/usr/bin/sshpass -p -p {ssh_password} scp -P {ssh_port} {file_path} {ssh_user}@{ssh_host}:{remote_path}"
 
     try:
         logging.info(f"Executing command: {scp_command}")
