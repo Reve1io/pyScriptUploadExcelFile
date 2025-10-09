@@ -11,11 +11,6 @@ from zeep import Client, Settings
 from zeep.transports import Transport
 import requests
 from requests.auth import HTTPBasicAuth
-from dotenv import load_dotenv
-from datetime import datetime
-
-# Загружаем переменные окружения
-load_dotenv()
 
 # Настройка логирования
 logging.basicConfig(level=logging.DEBUG)
@@ -25,7 +20,7 @@ UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'xlsx'}
 
 app = Flask(__name__)
-app.secret_key = os.getenv('FLASK_SECRET_KEY')
+app.secret_key = 'your_secret_key'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -34,21 +29,13 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def upload_to_ssh(file_path):
-
-    # Проверяем доступен ли sshpass
-    try:
-        subprocess.run(['which', 'sshpass'], check=True, capture_output=True)
-    except subprocess.CalledProcessError:
-        logging.warning("sshpass not available, skipping SSH upload")
-        return True  # Пропускаем ошибку
-
-    ssh_host = os.getenv('SSH_HOST')
-    ssh_port = os.getenv('SSH_PORT')
-    ssh_user = os.getenv('SSH_USER')
-    ssh_password = os.getenv('SSH_PASSWORD')
+    ssh_host = '83.69.192.170'
+    ssh_port = '5034'
+    ssh_user = 'root'
+    ssh_password = 'B6z2S9gwn29J'
     remote_path = f'/home/GetChips_API/project2.0/uploads/{os.path.basename(file_path)}'
 
-    scp_command = f"/usr/bin/sshpass -p {ssh_password} scp -P {ssh_port} {file_path} {ssh_user}@{ssh_host}:{remote_path}"
+    scp_command = f"sshpass -p {ssh_password} scp -P {ssh_port} {file_path} {ssh_user}@{ssh_host}:{remote_path}"
 
     try:
         logging.info(f"Executing command: {scp_command}")
@@ -59,9 +46,9 @@ def upload_to_ssh(file_path):
         raise
 
 def upload_to_ftp(file_path):
-    ftp_host = os.getenv('FTP_HOST')
-    ftp_user = os.getenv('FTP_USER')
-    ftp_password = os.getenv('FTP_PASSWORD')
+    ftp_host = 'nmarchj5.beget.tech'
+    ftp_user = 'nmarchj5_nexar'
+    ftp_password = 'Yk0P28M!ZgHW'
     try:
         with FTP(ftp_host) as ftp:
             ftp.login(ftp_user, ftp_password)
@@ -73,9 +60,9 @@ def upload_to_ftp(file_path):
         raise
 
 def send_octopart_to_1c(data: list):
-    wsdl_url = os.getenv('OCTOPART_URL')
-    username = os.getenv('OCTOPART_USER')
-    password = os.getenv('OCTOPART_PASSWORD')
+    wsdl_url = "http://web1c.radiant.local/erp_base/ws/ExchangeXML.1cws?wsdl"
+    username = "ExchangePortal"
+    password = "12345"
 
     session = requests.Session()
     session.auth = HTTPBasicAuth(username, password)
@@ -240,36 +227,5 @@ def upload_file():
             return redirect(url_for('upload_file'))
     return render_template("index.html")
 
-
-@app.route('/health')
-def health_check():
-    """Health check endpoint for monitoring"""
-    return {
-        'status': 'healthy',
-        'application': 'GetChips API',
-        'timestamp': datetime.now().isoformat(),
-        'version': '1.0'
-    }, 200
-
-
-@app.route('/version')
-def version_info():
-    """Version information new endpoint"""
-    try:
-        import subprocess
-        result = subprocess.run(
-            ['git', 'rev-parse', '--short', 'HEAD'],
-            capture_output=True, text=True, cwd=os.path.dirname(os.path.abspath(__file__))
-        )
-        commit_hash = result.stdout.strip() if result.returncode == 0 else "unknown"
-
-        return {
-            'application': 'GetChips API',
-            'commit': commit_hash,
-            'deployed_at': datetime.now().isoformat()
-        }
-    except Exception as e:
-        return {'error': str(e)}, 500
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
