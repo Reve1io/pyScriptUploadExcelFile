@@ -34,13 +34,21 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def upload_to_ssh(file_path):
+
+    # Проверяем доступен ли sshpass
+    try:
+        subprocess.run(['which', 'sshpass'], check=True, capture_output=True)
+    except subprocess.CalledProcessError:
+        logging.warning("sshpass not available, skipping SSH upload")
+        return True  # Пропускаем ошибку
+
     ssh_host = os.getenv('SSH_HOST')
     ssh_port = os.getenv('SSH_PORT')
     ssh_user = os.getenv('SSH_USER')
     ssh_password = os.getenv('SSH_PASSWORD')
     remote_path = f'/home/GetChips_API/project2.0/uploads/{os.path.basename(file_path)}'
 
-    scp_command = f"/usr/bin/sshpass -p -p {ssh_password} scp -P {ssh_port} {file_path} {ssh_user}@{ssh_host}:{remote_path}"
+    scp_command = f"/usr/bin/sshpass -p {ssh_password} scp -P {ssh_port} {file_path} {ssh_user}@{ssh_host}:{remote_path}"
 
     try:
         logging.info(f"Executing command: {scp_command}")
